@@ -135,8 +135,8 @@ namespace Project {
 
     JonesVector PhysicalEngine::apply_nicol_prism(const JonesVector& input) const {
         // Nicol prism at 90 degrees to initial polarization (assumed 0 degrees)
-        JonesVector pol{input[0], input[1]}; // Passes all polarization
-        // JonesVector pol{0.0, input[1]}; // Passes only y-component
+        // JonesVector pol{input[0], input[1]}; // Passes all polarization
+        JonesVector pol{0.0, input[1]}; // Passes only y-component
         // JonesVector pol{input[0], 0.0}; // Passes only x-component
         return pol; 
     }
