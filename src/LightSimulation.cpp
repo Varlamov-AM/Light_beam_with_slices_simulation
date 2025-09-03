@@ -53,17 +53,27 @@ namespace Project {
     void UniaxialCrystalVolume::apply_optical_effect(LightBeam& beam, double thickness) const {
         // Simplified birefringence: introduce phase difference
         double k = 2.0 * M_PI / beam.get_wavelength();
-        double delta_n = n_e_ - n_o_;
+        double n_e_theta = sqrt(
+            (cos(axis_theta_) * cos(axis_theta_)) / (n_o_ * n_o_) + 
+            (sin(axis_theta_) * sin(axis_theta_)) / (n_e_ * n_e_) 
+        );
+        double delta_n = n_e_theta - n_o_;
         double phase_diff = k * delta_n * thickness;
         
         JonesVector start_pol = beam.get_polarization();
         JonesVector final_pol = beam.get_polarization();
 
-        // Eigen::Matrix2cd m;
-        // m << std::complex<double>(1.0, 2.0), std::complex<double>(3.0, 4.0),
-        //      std::complex<double>(5.0, 6.0), std::complex<double>(7.0, 8.0);
+        // JonesMatrix = 
+        // (A  B)
+        // (B* C)
 
-        start_pol[0] *= std::exp(std::complex<double>(0.0, phase_diff));
+        std::complex<double> A = std::complex<double>(cos(phase_diff/2), -1 * sin(phase_diff/2) * cos(2 * axis_phi_));
+        std::complex<double> B = std::complex<double>(0, -1 * sin(phase_diff/2) * sin(2 * axis_phi_));
+        std::complex<double> C = std::complex<double>(cos(phase_diff/2),      sin(phase_diff/2) * cos(2 * axis_phi_));
+
+        final_pol[0] = A * start_pol[0] + B * start_pol[1];
+        final_pol[1] = std::conj(B) * start_pol[0] + C * start_pol[1];
+
         beam.update_polarization(final_pol);
     }
 
@@ -125,10 +135,9 @@ namespace Project {
 
     JonesVector PhysicalEngine::apply_nicol_prism(const JonesVector& input) const {
         // Nicol prism at 90 degrees to initial polarization (assumed 0 degrees)
-        // JonesVector pol{input[0], input[1]}; // Passes only y-component
-        JonesVector pol{0.0, input[1]}; // Passes only y-component
-        // std::cout << "before: " << input[0] << " " << input[1] << "\n";
-        // std::cout << "after: " << pol[0] << " " << pol[1] << "\n";
+        JonesVector pol{input[0], input[1]}; // Passes all polarization
+        // JonesVector pol{0.0, input[1]}; // Passes only y-component
+        // JonesVector pol{input[0], 0.0}; // Passes only x-component
         return pol; 
     }
 
