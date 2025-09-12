@@ -4,7 +4,7 @@ import scipy
 
 # Configuration
 GRID_SIZE = 640  # Size of the pixel grid
-NUM_DOMAINS = 200  # Approximate number of domains
+NUM_DOMAINS = 600  # Approximate number of domains
 
 # Material types
 materials = ['transparent', 'translucent', 'uniaxial']
@@ -45,7 +45,7 @@ def generate_voronoi_materials():
             phi = 0.0
             theta = 0.0
         else:  # uniaxial
-            param1 = np.random.uniform(1.5, 1.52)  # n_o
+            param1 = np.random.uniform(1.4, 1.45)  # n_o
             param2 = np.random.uniform(1.6, 1.65)  # n_e
             phi = np.random.uniform(0, 6.2831)  # 0 to 2π
             theta = np.random.uniform(0, 3.1415)  # 0 to π
